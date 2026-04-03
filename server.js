@@ -8,9 +8,11 @@ app.use(express.json());
 
 // Connect to MySQL
 const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",        // replace with your MySQL user
-  password: "0206" // replace with your MySQL password
+  host: "127.0.0.1",   // or "localhost"
+  user: "root",
+  password: "0206",
+  database: "expense_db",
+  port: 3306
 });
 
 // Create database if not exists
