@@ -6,23 +6,23 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Connect to MySQL
+// MySQL connection using environment variables
 const db = mysql.createConnection({
-  host: "127.0.0.1",   // or "localhost"
-  user: "root",
-  password: "0206",
-  database: "expense_db",
-  port: 3306
+  host: process.env.DB_HOST || "127.0.0.1",
+  user: process.env.DB_USER || "root",
+  password: process.env.DB_PASSWORD || "0206",
+  database: process.env.DB_NAME || "expense_db",
+  port: process.env.DB_PORT || 3306
 });
 
-// Create database if not exists
-db.query("CREATE DATABASE IF NOT EXISTS expense_db", (err) => {
-  if (err) throw err;
-  console.log("Database ready");
+// Test connection
+db.connect((err) => {
+  if (err) {
+    console.error("❌ Database connection failed:", err.message);
+  } else {
+    console.log("✅ Connected to MySQL");
+  }
 });
-
-// Use database
-db.changeUser({ database: "expense_db" });
 
 // Create table if not exists
 db.query(`
@@ -33,8 +33,8 @@ db.query(`
     date DATE
   )
 `, (err) => {
-  if (err) throw err;
-  console.log("Table ready");
+  if (err) console.error("❌ Table creation failed:", err.message);
+  else console.log("✅ Table ready");
 });
 
 // Add expense
@@ -55,6 +55,6 @@ app.get("/expenses", (req, res) => {
   });
 });
 
-// app.listen(5000, () => console.log("Backend running on http://localhost:5000"));
+// Dynamic port for Render
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Backend running on port ${PORT}`));
